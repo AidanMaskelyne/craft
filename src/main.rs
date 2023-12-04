@@ -6,6 +6,7 @@ use {
 
 fn main() -> anyhow::Result<()> {
 	let args = Args::parse();
+	craft::log::init(args.debug);
 
 	match args.command {
 		Commands::New { name } => {

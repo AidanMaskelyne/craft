@@ -8,6 +8,9 @@ use clap::{Parser, Subcommand};
 pub struct Args {
 	#[command(subcommand)]
 	pub command: Commands,
+
+	#[arg(long)]
+	pub debug: bool,
 }
 
 #[derive(Subcommand)]

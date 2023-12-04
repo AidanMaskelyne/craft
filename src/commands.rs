@@ -1,4 +1,5 @@
-use anyhow::{Result, Context};
+use log::error;
+use anyhow::{Result, Context, anyhow};
 use std::io::{stdin, stdout, Write};
 use std::path::PathBuf;
 use std::fs;
@@ -13,7 +14,13 @@ pub fn new(name: Option<String>) -> anyhow::Result<()> {
 	let current_dir = std::env::current_dir().context("failed getting current directory").unwrap();
 	let current_dir = current_dir.canonicalize().context("failed canonicalizing current directory").unwrap();
 
-	let project_dir = current_dir.clone().push(name.clone());
+	let mut project_dir = current_dir.clone();
+	project_dir.push(name.clone());
+
+	if project_dir.exists() {
+		error!("directory {} already exists", project_dir.display());
+		return Err(anyhow!("directory {} already exists.", project_dir.display()));
+	}
 
 	println!("Creating project {} in {}", name, project_dir.display());
 
