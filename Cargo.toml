@@ -1,3 +1,4 @@
+workspace = { members = ["wasd"] }
 [package]
 name = "craft"
 version = "0.1.0"
