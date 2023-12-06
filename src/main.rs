@@ -8,7 +8,7 @@ use log::error;
 fn main() {
 	if let Err(err) = try_main() {
 		error!("{}", err);
-		err.chain().skip(1).for_each(|cause| eprintln!("because: {}", cause));
+		err.chain().skip(1).for_each(|cause| eprintln!("	because: {}", cause));
 		std::process::exit(1);
 	}
 }
@@ -22,9 +22,8 @@ fn try_main() -> anyhow::Result<()> {
 			craft::commands::new(name)?;
 		},
 		Commands::Init { name } => {
-			println!("{}", name.unwrap());
 		},
 	}
 
-	return Ok(())
+	return Ok(());
 }

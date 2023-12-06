@@ -1,8 +1,10 @@
-use log::error;
+use log::{debug, error};
 use anyhow::{Context, anyhow};
 use std::io::{stdin, stdout, Write};
 use std::path::PathBuf;
 use std::fs;
+
+use crate::premake5::{self, PremakeConfig};
 
 pub fn new(name: Option<String>) -> anyhow::Result<()> {
 	let name = if let Some(name) = name {
@@ -11,17 +13,24 @@ pub fn new(name: Option<String>) -> anyhow::Result<()> {
 		prompt_for_project_name()
 	};
 
-	let current_dir = std::env::current_dir().context("Failed getting current directory")?;
-	let current_dir = current_dir.canonicalize().context("Failed canonicalizing current directory")?;
-
-	let mut project_dir = current_dir.clone();
-	project_dir.push(name.clone());
+	let project_dir = PathBuf::from(name.clone());
+	let mut project_craft_dir = project_dir.clone();
+	project_craft_dir.push(".craft");
 
 	if project_dir.exists() {
 		return Err(anyhow!("Directory `{}` already exists", project_dir.display()));
 	}
 
-	println!("Creating project {} in {}", name, project_dir.display());
+	fs::create_dir(project_dir).context("Failed to create project directory")?;
+	fs::create_dir(project_craft_dir).context("Failed to create `.craft` directory in project folder")?;
+
+	let premake5config = PremakeConfig::new()
+		.set_project_name(name)
+		.set_language("C++".to_string())
+		.add_include_dir(PathBuf::from("include"))
+		.add_include_dir(PathBuf::from("include2"));
+
+	println!("{}", premake5config);
 
 	return Ok(());
 }
