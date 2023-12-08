@@ -1,7 +1,11 @@
 // Module for generating premake5.lua file contents
 
+use std::fs::{File, OpenOptions};
 use std::path::PathBuf;
 use std::fmt;
+use anyhow::Context;
+
+use log::debug;
 
 pub struct PremakeConfig {
 	project_name: String,
@@ -28,6 +32,13 @@ impl PremakeConfig {
 		self.include_dirs.push(dir);
 		return self;
 	}
+
+	pub fn write_to_file(&self, output_file: &PathBuf) -> anyhow::Result<()>{
+		let current_premake_contents = File::open(output_file.clone());
+		let premake_file = OpenOptions::new();
+
+		Ok(())
+	}
 }
 
 impl Default for PremakeConfig {
@@ -53,11 +64,9 @@ impl fmt::Display for PremakeConfig {
 
 		write!(
 			f,
-			"
-Project name            {}
+"Project name            {}
 Language                {}
-Include directories:    [ {} ]
-			",
+Include directories:    [ {} ]",
 			self.project_name,
 			self.language,
 			include_dirs_display,
